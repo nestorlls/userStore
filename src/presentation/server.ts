@@ -20,6 +20,8 @@ export class Server {
   public async start() {
     this.app.use(express.json()).use(express.urlencoded({ extended: true }));
 
+    this.app.use(this.routes);
+
     this.serverListener = this.app.listen(this.port, () => {
       console.log(`Listening on port ${this.port}`);
     });
