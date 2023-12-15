@@ -1,4 +1,9 @@
 node_modules
+mongo-data
+postgres_data
+build
+distd
+coverage
 
 package-lock.json
 .env
