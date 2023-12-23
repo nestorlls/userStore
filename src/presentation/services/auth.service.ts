@@ -1,38 +1,28 @@
 import { BcryptAdapter, JwtAdapter } from '../../config';
-import { User } from '../../data';
 import {
+  AuthRepository,
   CustomeError,
   LoginUserDto,
   RegisterUserDto,
-  UserEntity,
 } from '../../domain';
 import { EmailService } from './email.service';
 
 export class AuthService {
   //DI
   constructor(
+    private readonly authRepository: AuthRepository,
     private readonly emailService: EmailService,
     private readonly webServiceUrl: string
   ) {}
 
   public async login(loginDto: LoginUserDto) {
     const { email } = loginDto;
-    const userExists = await User.findOne({ email });
+    const { password, ...user } = await this.authRepository.login(loginDto);
 
-    if (!userExists) {
-      throw CustomeError.badRequest('User not found');
-    }
-
-    const isMatch = BcryptAdapter.compare(
-      loginDto.password,
-      userExists.password!
-    );
-
+    const isMatch = BcryptAdapter.compare(loginDto.password, password!);
     if (!isMatch) throw CustomeError.badRequest('Password is incorrect');
 
-    const { password, ...user } = UserEntity.fromObject(userExists);
-    const token = await JwtAdapter.generateToken({ id: userExists.id, email });
-
+    const token = await JwtAdapter.generateToken({ id: user.id, email });
     if (!token)
       throw CustomeError.internalServerError('Error generating token');
 
@@ -44,29 +34,20 @@ export class AuthService {
 
   public async register(registerDto: RegisterUserDto) {
     const { email } = registerDto;
-    const userExists = await User.findOne({ email });
-    if (userExists) {
-      throw CustomeError.badRequest('User already exists');
-    }
+    const { password, ...user } = await this.authRepository.register(
+      registerDto
+    );
 
     try {
       await this.sendEmailValidationLink(email);
-
-      const user = new User(registerDto);
-      user.password = BcryptAdapter.hash(registerDto.password);
-      await user.save();
-
-      const { password, ...rest } = UserEntity.fromObject(user);
-
       const token = await JwtAdapter.generateToken({ id: user.id, email });
-
       if (!token) {
         throw CustomeError.internalServerError('Error generating token');
       }
 
       return {
-        user: rest,
-        token: token,
+        user,
+        token,
       };
     } catch (error) {
       throw CustomeError.internalServerError(`${error}`);
