@@ -13,11 +13,11 @@ export class JwtAdapter {
     });
   }
 
-  static async verifyToken(token: string) {
+  static async verifyToken<T>(token: string): Promise<T | null> {
     return new Promise((resolve) => {
       verify(token, jwt_secret, (err, decoded) => {
         if (err) return resolve(null);
-        resolve(decoded);
+        resolve(decoded as T);
       });
     });
   }
