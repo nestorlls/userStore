@@ -5,7 +5,7 @@ import {
   PaginationDto,
   UpdateCategoryDto,
 } from '../../domain';
-import { CategoryService } from '../services/category.service';
+import { CategoryService } from '../services';
 
 export class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}
@@ -18,7 +18,7 @@ export class CategoryController {
 
     this.categoryService
       .getAll(paginationDto!)
-      .then((categories) => res.json(categories))
+      .then((categories) => res.status(200).json(categories))
       .catch((error) => this.handleError(error, res));
   };
 
@@ -27,12 +27,15 @@ export class CategoryController {
 
     this.categoryService
       .getbyId(id)
-      .then((category) => res.json(category))
+      .then((category) => res.status(200).json(category))
       .catch((error) => this.handleError(error, res));
   };
 
   create = (req: Request, res: Response) => {
-    const [error, createCategoryDto] = CreateCategoryDto.create(req.body);
+    const [error, createCategoryDto] = CreateCategoryDto.create({
+      ...req.body,
+      user: req.body.user.id,
+    });
     if (error) return res.status(400).json({ error });
 
     this.categoryService
