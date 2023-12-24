@@ -6,13 +6,13 @@ import {
   PaginationDto,
   PaginationReturnDto,
   UpdateCategoryDto,
-  UserEntity,
 } from '../../domain';
 
 export class CategoryRepositoryImpl implements CategoryRepository {
   constructor(private readonly categoryDataSource: CategoryDataSource) {}
 
-  async getAll(paginationDto: PaginationDto): Promise<PaginationReturnDto> {
+  /* prettier-ignore */
+  async getAll(paginationDto: PaginationDto): Promise<PaginationReturnDto<CategoryEntity>> {
     return await this.categoryDataSource.getAll(paginationDto);
   }
 
@@ -20,15 +20,12 @@ export class CategoryRepositoryImpl implements CategoryRepository {
     return await this.categoryDataSource.getbyId(id);
   }
 
-  async create(
-    category: CreateCategoryDto,
-    user: UserEntity
-  ): Promise<CategoryEntity> {
-    return await this.categoryDataSource.create(category, user);
+  async create(categoryDto: CreateCategoryDto): Promise<CategoryEntity> {
+    return await this.categoryDataSource.create(categoryDto);
   }
 
-  async update(category: UpdateCategoryDto): Promise<CategoryEntity> {
-    return await this.categoryDataSource.update(category);
+  async update(categoryDto: UpdateCategoryDto): Promise<CategoryEntity> {
+    return await this.categoryDataSource.update(categoryDto);
   }
 
   async delete(id: string): Promise<void> {
