@@ -6,7 +6,7 @@ interface IMongoConnection {
 }
 
 export class MongoConnection {
-  static async connection(options: IMongoConnection) {
+  static async connect(options: IMongoConnection) {
     const { mongoUrl, dbName } = options;
 
     try {
@@ -14,6 +14,15 @@ export class MongoConnection {
       if (mongoConneted.STATES.connected === 1) return true;
     } catch (error) {
       console.log('MongoDB connection error: ', error);
+      throw error;
+    }
+  }
+
+  static async disconnect() {
+    try {
+      await mongoose.disconnect();
+    } catch (error) {
+      console.log('MongoDB disconnect error: ', error);
       throw error;
     }
   }

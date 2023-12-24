@@ -8,7 +8,7 @@ import { Server } from './presentation/server';
 })();
 
 async function main() {
-  const mongoConneted = await MongoConnection.connection({
+  const mongoConneted = await MongoConnection.connect({
     mongoUrl: envs.MONGO_DB_URL,
     dbName: envs.MONGO_DB_NAME,
   });
