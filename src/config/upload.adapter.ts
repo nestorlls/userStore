@@ -1,3 +1,6 @@
-import { UploadedFile } from 'express-fileupload';
+import fileUpload, { UploadedFile } from 'express-fileupload';
 
-export type UploadFile = UploadedFile;
+const filesUpload = fileUpload;
+type UploadFile = UploadedFile;
+
+export { filesUpload, UploadFile };
