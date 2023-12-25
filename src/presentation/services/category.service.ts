@@ -4,7 +4,6 @@ import {
   CustomeError,
   PaginationDto,
   UpdateCategoryDto,
-  UserEntity,
 } from '../../domain';
 
 export class CategoryService {
@@ -26,9 +25,9 @@ export class CategoryService {
     }
   }
 
-  async create(dto: CreateCategoryDto, user: UserEntity) {
+  async create(dto: CreateCategoryDto) {
     try {
-      return await this.categoryRepository.create(dto, user);
+      return await this.categoryRepository.create(dto);
     } catch (error) {
       throw CustomeError.internalServerError(`${error}`);
     }
