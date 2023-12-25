@@ -18,7 +18,6 @@ export class UploadMiddleware {
 
   static containTypes(req: Request, res: Response, next: NextFunction) {
     const { type } = req.params;
-    console.log(req.params);
 
     const validTypes = ['users', 'products', 'categories'];
 
