@@ -14,18 +14,11 @@ export class UploadRoutes {
     router
       .use(filesUpload({ limits: { fileSize: 50 * 1024 * 1024 } }))
       .use(UploadMiddleware.constainFiles)
+      .use(UploadMiddleware.containTypes)
       .use(UploadMiddleware.ValidateFileExtension);
 
-    router.post(
-      '/single/:type',
-      [UploadMiddleware.containTypes],
-      controller.uploadFile
-    );
-    router.post(
-      '/multiple/:type',
-      [UploadMiddleware.containTypes],
-      controller.uploadMultipleFiles
-    );
+    router.post('/single/:type', controller.uploadFile);
+    router.post('/multiple/:type', controller.uploadMultipleFiles);
 
     return router;
   }

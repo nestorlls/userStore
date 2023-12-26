@@ -17,7 +17,7 @@ export class UploadMiddleware {
   }
 
   static containTypes(req: Request, res: Response, next: NextFunction) {
-    const { type } = req.params;
+    const type = req.url.split('/').at(2) ?? '';
 
     const validTypes = ['users', 'products', 'categories'];
 
@@ -30,19 +30,18 @@ export class UploadMiddleware {
     next();
   }
 
-  static ValidateFileExtension(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) {
-    const files = req.files!.file as UploadFile;
-    const extension = files.mimetype.split('/').at(1) ?? '';
+  /* prettier-ignore */
+  static ValidateFileExtension(req: Request, res: Response, next: NextFunction) {
+    const files = req.body.files as UploadFile[];
     const validExtensions = ['png', 'jpg', 'jpeg', 'gif'];
 
-    if (!validExtensions.includes(extension)) {
-      return res.status(400).json({
-        error: `Invalid extension ${extension}, valid extensions: ${validExtensions}`,
-      });
+    for (const file of files) {
+      const extension = file.mimetype.split('/').at(1);
+      if (!validExtensions.includes(extension!)) {
+        return res.status(400).json({
+          error: `Invalid extension ${extension}. Valid extensions: ${validExtensions}`,
+        });
+      }
     }
 
     next();
